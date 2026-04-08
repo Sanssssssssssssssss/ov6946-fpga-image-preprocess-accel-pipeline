@@ -1,0 +1,46 @@
+Hardware Source Licensing Notice
+
+This repository contains a mix of:
+
+1. inherited RTL and constraints collected from prior project snapshots,
+2. Xilinx/Vivado-generated IP collateral and project data,
+3. repository curation files added during cleanup.
+
+No blanket relicense is asserted for the inherited HDL, constraints, project sources, IP configuration files, generated netlists, or vendor collateral in this repository.
+
+Until provenance is fully verified, treat the inherited hardware sources as:
+
+- provided for review, maintenance, and internal engineering evaluation,
+- not automatically granted for public redistribution or commercial relicensing,
+- still subject to any original upstream or vendor terms that may apply.
+
+The following repository-level curation files created during this cleanup may be used under the MIT License:
+
+- `README.md`
+- `LICENSE`
+- `.gitignore`
+
+MIT License
+
+Copyright (c) 2026
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of these repository-level curation files to deal in them without restriction,
+including without limitation the rights to use, copy, modify, merge, publish,
+distribute, sublicense, and/or sell copies of them, subject to the following
+conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the repository-level curation files listed
+above.
+
+THESE CURATION FILES ARE PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO
+EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES
+OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ARISING FROM, OUT OF OR IN CONNECTION WITH THESE CURATION FILES OR THE USE OR
+OTHER DEALINGS IN THESE CURATION FILES.
+
+Replace this notice with a project-wide license only after ownership and
+upstream licensing of the hardware sources have been confirmed.

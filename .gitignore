@@ -1,0 +1,30 @@
+# OS
+desktop.ini
+Thumbs.db
+
+# Editor and temp
+*.tmp
+*.bak
+
+# Vivado logs
+*.jou
+*.log
+*.backup.jou
+*.backup.log
+
+# Vivado generated runtime artifacts
+vivado/.Xil/
+vivado/*.cache/
+vivado/*.hw/
+vivado/*.runs/
+vivado/*.sim/
+vivado/*.gen/
+
+# Bitstream and reports
+*.bit
+*.bin
+*.mcs
+*.ltx
+*.rpt
+*.drc
+*.pb
