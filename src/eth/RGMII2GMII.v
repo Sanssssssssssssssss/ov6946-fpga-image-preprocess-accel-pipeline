@@ -8,8 +8,8 @@ module RGMII2GMII(
     output reg RxDV,
     output reg RxER,
     output RxClk,
-	 input ClkEN,
-	 input rst
+     input ClkEN,
+     input rst
     );
 
 wire [3:0] RxDH;
@@ -22,13 +22,13 @@ reg [3:0] RxD1H;
 reg [3:0] RxD1L;
 reg [7:0] RxD2;
 
-	assign RxClk = RGMII_RxClk;
+    assign RxClk = RGMII_RxClk;
 
-	genvar I;
-	generate
-	for(I=0;I<4;I=I+1)
-	begin: genddr
-	IDDR #(
+    genvar I;
+    generate
+    for(I=0;I<4;I=I+1)
+    begin: genddr
+    IDDR #(
       .DDR_CLK_EDGE("OPPOSITE_EDGE"), // "OPPOSITE_EDGE", "SAME_EDGE"
                                       //    or "SAME_EDGE_PIPELINED"
       .INIT_Q1(1'b0), // Initial value of Q1: 1'b0 or 1'b1
@@ -43,10 +43,10 @@ reg [7:0] RxD2;
       .R(rst),   // 1-bit reset
       .S(1'b0)    // 1-bit set
    );
-	end
-	endgenerate
+    end
+    endgenerate
 
-	IDDR #(
+    IDDR #(
       .DDR_CLK_EDGE("OPPOSITE_EDGE"), // "OPPOSITE_EDGE", "SAME_EDGE"
                                       //    or "SAME_EDGE_PIPELINED"
       .INIT_Q1(1'b0), // Initial value of Q1: 1'b0 or 1'b1
@@ -62,37 +62,37 @@ reg [7:0] RxD2;
       .S(1'b0)    // 1-bit set
    );
 
-	always@(posedge RGMII_RxClk)
-	begin
-		RxD1L<=RxDL;
-	end
+    always@(posedge RGMII_RxClk)
+    begin
+        RxD1L<=RxDL;
+    end
 
-	always@(negedge RGMII_RxClk)
-	begin
-		RxD1H<=RxDH;
-	end
+    always@(negedge RGMII_RxClk)
+    begin
+        RxD1H<=RxDH;
+    end
 
-	assign RxD1 = {RxD1H, RxD1L};
+    assign RxD1 = {RxD1H, RxD1L};
 
-	always@(posedge(RGMII_RxClk))
-	begin
-			RxD2 <= RxD1;
-			RxD <= RxD2;
-	end
+    always@(posedge(RGMII_RxClk))
+    begin
+            RxD2 <= RxD1;
+            RxD <= RxD2;
+    end
 
-	always@(posedge(RGMII_RxClk))
-	begin
-		DV1 <= DV;
-	end
-	always@(negedge(RGMII_RxClk))
-	begin
-		ERR1<= ER;
-	end
-	always@(posedge(RGMII_RxClk))
-	begin
-			ERR2 <= ERR1;
-			DV2 <= DV1;
-			RxDV <= DV2;
-			RxER <= (DV2^ERR2);
-	end
+    always@(posedge(RGMII_RxClk))
+    begin
+        DV1 <= DV;
+    end
+    always@(negedge(RGMII_RxClk))
+    begin
+        ERR1<= ER;
+    end
+    always@(posedge(RGMII_RxClk))
+    begin
+            ERR2 <= ERR1;
+            DV2 <= DV1;
+            RxDV <= DV2;
+            RxER <= (DV2^ERR2);
+    end
 endmodule

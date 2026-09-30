@@ -125,8 +125,8 @@ begin
         i2c_config_index <= 0;
     else if(i2c_transfer_en)
         begin
-		//	Force always step following.
-		if(i2c_transfer_end)	//	 & ~i2c_ack)
+        //	Force always step following.
+        if(i2c_transfer_end)	//	 & ~i2c_ack)
 //		if(i2c_transfer_end /*& ~i2c_ack*/)											//Just for test
             begin
             if(i2c_config_index < i2c_config_size)
@@ -161,7 +161,7 @@ begin
                     next_state = I2C_WR_START;  //Write Data to I2C
                 else// if(i2c_config_index >= i2c_config_size)
                     next_state = I2C_IDLE;      //Config I2C Complete
-					 end
+                     end
             else
                 next_state = next_state;
             end
@@ -301,7 +301,7 @@ always@(posedge clk or negedge rst_n)
 begin
     if(!rst_n)
         begin
-		{i2c_ack1, i2c_ack2, i2c_ack3, i2c_ack4} <= 4'b1111;
+        {i2c_ack1, i2c_ack2, i2c_ack3, i2c_ack4} <= 4'b1111;
         i2c_ack <= 1'b1;
         end
     else if(i2c_capture_en)
@@ -331,7 +331,7 @@ end
 
 //---------------------------------------------------
 wire    bir_en =(   current_state == I2C_WR_ACK1 || current_state == I2C_WR_ACK2 ||
-	            current_state == I2C_WR_ACK3 || current_state == I2C_WR_ACK4) ? 1'b1 : 1'b0;
+                current_state == I2C_WR_ACK3 || current_state == I2C_WR_ACK4) ? 1'b1 : 1'b0;
 assign  i2c_sclk = (current_state >= I2C_WR_IDADDR && current_state <= I2C_WR_ACK4) ?
                     i2c_ctrl_clk : 1'b1;
 //assign  i2c_sdat = (~bir_en) ? i2c_sdat_out : 1'bz;

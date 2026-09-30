@@ -1,6 +1,6 @@
 module ip_checksum(
-	input           clk            ,
-	input           reset_n        ,
+    input           clk            ,
+    input           reset_n        ,
 
   input           cal_en         ,
 

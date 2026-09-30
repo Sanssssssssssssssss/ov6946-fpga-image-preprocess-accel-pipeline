@@ -1,0 +1,14 @@
+* text=auto
+*.v text eol=lf
+*.sv text eol=lf
+*.vh text eol=lf
+*.tcl text eol=lf
+*.py text eol=lf
+*.md text eol=lf
+*.xdc text eol=lf
+*.xci text eol=lf
+*.xpr text eol=lf
+*.dcp binary
+ipc/** linguist-generated=true
+vivado/** linguist-generated=true
+legacy/** linguist-vendored=true

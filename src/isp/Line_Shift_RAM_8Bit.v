@@ -63,13 +63,13 @@ localparam ADDR_MSB = 2 ** ADDR_WIDTH - 1;
 reg 	[DATA_WIDTH-1:0] 	r_ram[ADDR_MSB:0];
 
 always @(posedge clk) begin
-	if(bram_wenb) begin
-		r_ram[bram_waddr] <= bram_wdata;
-	end else begin
-	end
+    if(bram_wenb) begin
+        r_ram[bram_waddr] <= bram_wdata;
+    end else begin
+    end
 end
 always @(posedge clk) begin
-	bram_rdata <= r_ram[bram_raddr];
+    bram_rdata <= r_ram[bram_raddr];
 end
 
 //shift_reg_bram

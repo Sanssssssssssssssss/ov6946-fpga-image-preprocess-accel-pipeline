@@ -1,12 +1,11 @@
 `timescale 1ns / 1ps
-
 module ODDR2To1 (
-	input 			clk_i,
-	input 			rst_i,
+    input 			clk_i,
+    input 			rst_i,
 
-	input 			data_p_i,
-	input 			data_n_i,
-	output 			data_o
+    input 			data_p_i,
+    input 			data_n_i,
+    output 			data_o
 );
    ODDR #(
       .DDR_CLK_EDGE("SAME_EDGE"), // "OPPOSITE_EDGE" or "SAME_EDGE"

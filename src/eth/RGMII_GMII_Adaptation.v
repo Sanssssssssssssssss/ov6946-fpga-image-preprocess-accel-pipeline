@@ -1,8 +1,8 @@
 `timescale 1ns / 1ps
 
 module RGMII_GMII_Adaptation(
-	 input [2:0] Speed,
-	 input RxClkPhase,//0: normal, 1 shift 90deg
+     input [2:0] Speed,
+     input RxClkPhase,//0: normal, 1 shift 90deg
     input [7:0] TxD,
     input TxEN,
     input TxER,
@@ -11,7 +11,7 @@ module RGMII_GMII_Adaptation(
     output RxDV,
     output RxER,
     output RxClk,
-	 output RxClk_MAC,//for MAC Rx block which works at half Rx Clock in 100/10 mode and at full Rx clk in 1G mode
+     output RxClk_MAC,//for MAC Rx block which works at half Rx Clock in 100/10 mode and at full Rx clk in 1G mode
     output [3:0] RGMII_TxD,
     output RGMII_TxCtl,
     output RGMII_TxClk,
@@ -19,8 +19,8 @@ module RGMII_GMII_Adaptation(
     input RGMII_RxCtl,
     input RGMII_RxClk,
     output reg [3:0] Status,
-	 input CE,
-	 input rst
+     input CE,
+     input rst
     );
 
 wire RXDVi,RXERi;
@@ -35,59 +35,59 @@ reg TxCE, TxCE1;
 wire RxClkDiv2;
 wire CLK0, CLKFB, CLK_RX, CLK_180, CLK_90;
 
-	assign RxDV = RXDVi;
-	assign RxER = RXERi;
-	assign RxD = RXDi;
+    assign RxDV = RXDVi;
+    assign RxER = RXERi;
+    assign RxD = RXDi;
 
 
 
 GMII2RGMII TX_Adapter(.TxD(TxD),.TxClk(TxClk),.TxEn(TxEN),.TxErr(TxER),
-							.RGMII_TxD(RGMII_TxD),.RGMII_TxCtl(RGMII_TxCtl),.RGMII_TxClk(RGMII_TxClk),
-							.ClkEN(TxCE),.rst(TxSync_Rst));
+                            .RGMII_TxD(RGMII_TxD),.RGMII_TxCtl(RGMII_TxCtl),.RGMII_TxClk(RGMII_TxClk),
+                            .ClkEN(TxCE),.rst(TxSync_Rst));
 
 
 RGMII2GMII RX_Adapter(.RGMII_RxD(RGMII_RxD),.RGMII_RxCtl(RGMII_RxCtl),.RGMII_RxClk(CLK_RX),
-								.RxD(RXDi),.RxDV(RXDVi),.RxER(RXERi),.RxClk(RxClk),.ClkEN(RxCE),.rst(RxSync_Rst));
+                                .RxD(RXDi),.RxDV(RXDVi),.RxER(RXERi),.RxClk(RxClk),.ClkEN(RxCE),.rst(RxSync_Rst));
 
-	always@(posedge(rst) or posedge(CLK_RX))
-	begin
-			if(rst)
-			begin
-				Status <= 4'b0;
-			end
-			else
-			begin
-			if(~(RXDVi|RXERi))
-				begin
-					Status <= RXDi;
-				end
-			end
-	end
+    always@(posedge(rst) or posedge(CLK_RX))
+    begin
+            if(rst)
+            begin
+                Status <= 4'b0;
+            end
+            else
+            begin
+            if(~(RXDVi|RXERi))
+                begin
+                    Status <= RXDi;
+                end
+            end
+    end
 
-	always@(posedge(CLK_RX))
-	begin
-		if(rst)
-			RxSync_Rst1 <= 1;
-		else
-			RxSync_Rst1 <= 0;
-		RxSync_Rst <= RxSync_Rst1;
-		RxCE <= RxCE1;
-		RxCE1 <= CE;
-	end
+    always@(posedge(CLK_RX))
+    begin
+        if(rst)
+            RxSync_Rst1 <= 1;
+        else
+            RxSync_Rst1 <= 0;
+        RxSync_Rst <= RxSync_Rst1;
+        RxCE <= RxCE1;
+        RxCE1 <= CE;
+    end
 
-	always@(posedge(TxClk))
-	begin
-		if(rst)
-			TxSync_Rst1 <= 1;
-		else
-			TxSync_Rst1 <= 0;
-		TxSync_Rst <= TxSync_Rst1;
-		TxCE <= TxCE1;
-		TxCE1 <= CE;
-	end
+    always@(posedge(TxClk))
+    begin
+        if(rst)
+            TxSync_Rst1 <= 1;
+        else
+            TxSync_Rst1 <= 0;
+        TxSync_Rst <= TxSync_Rst1;
+        TxCE <= TxCE1;
+        TxCE1 <= CE;
+    end
 
-	//DCM for Receiving Path
-	  DCM_BASE #(
+    //DCM for Receiving Path
+      DCM_BASE #(
       .CLKDV_DIVIDE(2.0), // Divide by: 1.5,2.0,2.5,3.0,3.5,4.0,4.5,5.0,5.5,6.0,6.5
                           //   7.0,7.5,8.0,9.0,10.0,11.0,12.0,13.0,14.0,15.0 or 16.0
       .CLKFX_DIVIDE(2), // Can be any integer from 1 to 32
@@ -121,27 +121,27 @@ RGMII2GMII RX_Adapter(.RGMII_RxD(RGMII_RxD),.RGMII_RxCtl(RGMII_RxCtl),.RGMII_RxC
       .RST(rst)            // DCM asynchronous reset input
    );
 
-	BUFG BUFG_inst (
+    BUFG BUFG_inst (
       .O(CLKFB),     // Clock buffer output
       .I(CLK0)      // Clock buffer input
    );
-	//Use this to have the same amount of delay
-	BUFGMUX BUFGMUX_inst (
+    //Use this to have the same amount of delay
+    BUFGMUX BUFGMUX_inst (
       .O(CLK_RX),    // Clock MUX output
       .I0(CLK0),  // Clock0 input
       .I1(CLK_90),  // Clock1 input
       .S(RxClkPhase)     // Clock select input
    );
 
-	//	BUFG BUFG_RX_inst (
-	//      .O(CLK_RX),     // Clock buffer output
-	//      .I(CLK_90)      // Clock buffer input
-	//   );
-	//assign CLK_RX = CLKFB;
-	BUFGMUX RxClkMux(
-							.I0(RxClkDiv2),
-							.I1(CLK0),
-							.O(RxClk_MAC),
-							.S(Speed[2]));
+    //	BUFG BUFG_RX_inst (
+    //      .O(CLK_RX),     // Clock buffer output
+    //      .I(CLK_90)      // Clock buffer input
+    //   );
+    //assign CLK_RX = CLKFB;
+    BUFGMUX RxClkMux(
+                            .I0(RxClkDiv2),
+                            .I1(CLK0),
+                            .O(RxClk_MAC),
+                            .S(Speed[2]));
 
 endmodule

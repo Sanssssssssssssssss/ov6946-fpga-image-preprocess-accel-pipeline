@@ -1,0 +1,29 @@
+Source provenance
+=================
+
+This project includes inherited hardware sources and vendor-generated material.
+Repository maintenance does not transfer ownership or grant new rights to them.
+
+Known source notices in the original project snapshot included:
+
+- CrazyBingo / Thereturnofbingo: camera capture, I2C and ISP material.
+  The original CMOS_Capture_RAW_Gray.v notice stated:
+  "CONFIDENTIAL IN CONFIDENCE
+  This confidential and proprietary software may be only used as authorized
+  by a licensing agreement from CrazyBingo (Thereturnofbingo).
+  In the event of publication, the following notice is applicable:
+  Copyright (C) 2011-201x CrazyBingo Corporation
+  The entire notice above must be reproduced on all authorized copies."
+- CrazyBird Corporation: original image-processing headers contained
+  "Copyright (C) 2021-20xx CrazyBird Corporation".
+- Xilinx: generated IP, MIG sources, simulation models and project collateral.
+- Altera: legacy eth_dcfifo.v, with its original vendor usage notice.
+- Easics: CRC generator source notices retained in the corresponding files.
+- Sameer Puri: TMDS channel implementation, as attributed in tmds_channel.v.
+- Inherited HDMI integration comments reference Digilent modifications;
+  complete upstream provenance has not been established.
+
+Some inherited banners were removed during earlier repository cleanup. Their
+absence is not evidence of a license grant. This inventory records known
+provenance; it is not a replacement for complete upstream license terms.
+Consult LICENSE and individual file notices before redistribution.

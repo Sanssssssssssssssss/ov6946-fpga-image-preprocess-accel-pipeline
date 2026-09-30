@@ -19,6 +19,16 @@ The following repository-level curation files created during this cleanup may be
 - `README.md`
 - `LICENSE`
 - `.gitignore`
+- `.gitattributes`
+- `.editorconfig`
+- `.github/workflows/`
+- `scripts/`
+- `tests/`
+- `docs/`
+- `legacy/README.md`
+
+Known inherited attributions are recorded in NOTICE. This scope excludes
+all inherited HDL, even when moved, reformatted or annotated during maintenance.
 
 MIT License
 

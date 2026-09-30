@@ -1,3 +1,6 @@
+// Fully pipelined unsigned division; valid advances with the arithmetic stages.
+// Output is valid C_DIVIDEND_WIDTH clocks after the input capture edge.
+// Callers must supply a nonzero divisor whenever din_valid is asserted.
 module unsigned_divider
 #(
     parameter C_DIVIDEND_WIDTH = 32 ,

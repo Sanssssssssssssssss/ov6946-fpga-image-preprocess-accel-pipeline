@@ -1,70 +1,109 @@
-# fpga-image-preprocess-accel-pipeline
+# OV6946 FPGA Image Preprocessing Pipeline
 
-面向 FPGA 图像预处理加速链路的 Vivado 工程快照。当前仓库围绕 `OV6946` 传感器输入、DDR3 帧缓存、图像预处理、HDMI 显示输出展开，并保留了独立的 UDP/GMII 发送接收模块用于后续链路扩展。
+基于 Artix-7 的图像预处理加速工程：采集 OV6946 相机链路的 RAW8 数据，完成 Bayer 转 RGB、双线性插值、DDR3 帧缓存、双边滤波与拉普拉斯锐化，通过 HDMI 显示，并接入 RGB565 UDP 发送链路。
 
-## 建议仓库名
+**当前状态：** 源码入口已统一，工程依赖检查、模块自检仿真、Vivado RTL 展开和顶层综合已通过。整机图像、DDR 帧切换、以太网收发及板级时序仍需验证，见 [验证记录与已知问题](docs/validation.md)。
 
-建议将仓库命名为 `fpga-image-preprocess-accel-pipeline`。
+## 数据流
 
-## 主处理链路
+```mermaid
+flowchart LR
+    CAM["OV6946 / OV426 · RAW8 · 400×400"] --> CAP["DVP 采集"]
+    I2C["I2C 配置"] --> CAM
+    CAP --> RGB["Bayer → RGB888"]
+    RGB --> SCALE["RGB 三通道双线性插值 · 640×640"]
+    SCALE --> DDR["AXI / DDR3 帧缓存"]
+    DDR --> LCD["1280×720 显示时序"]
+    LCD --> CROP["图像窗口遮罩"]
+    CROP --> BF["3×3 双边滤波"]
+    BF --> SHARP["Laplacian 锐化"]
+    SHARP --> HDMI["TMDS / HDMI"]
+    SHARP --> ETH["RGB565 / FIFO / UDP / RGMII"]
+```
 
-当前主链路可以从顶层 `rtl/FPGA_Test.v` 读出：
+分辨率来自当前顶层参数。640×640 图像与 720p 光栅、DDR 读取和 UDP 窗口的对齐，需按 [上板说明](docs/bring-up.md) 校准。
 
-1. `src/cmos_i2c/I2C_OV426_400400_Config.v` 与 `src/cmos_i2c/i2c_timing_ctrl_reg16_dat8_wronly.v` 完成 OV6946 配置时序。
-2. `src/cmos_i2c/CMOS_Capture_RAW_Gray.v` 采集 DVP RAW/Gray 数据流。
-3. `src/axi/axi4_ctrl.v` 通过 AXI 读写 DDR3，配合 `ipc/DDR3_0` 提供帧缓存。
-4. `src/isp/VIP_RAW8_RGB888.v` 将 RAW 数据恢复为 RGB888。
-5. `src/isp/FrameBoundCrop.v` 对有效图像区域做边界裁剪。
-6. `src/Video_Image_Processor/bilateral_filter_top.v` 分别对 R/G/B 三通道做双边滤波。
-7. `src/Video_Image_Processor/VIP_Sharpen/Laplacian_sharpen_top.v` 分别对 R/G/B 三通道做拉普拉斯锐化。
-8. `src/rgb2dvi/rgb2dvi.v` 与 `src/rgb2dvi/tmds_channel.v` 输出 HDMI TMDS 信号。
+## 环境与入口
 
-## 工程入口
+| 项目 | 配置 |
+| --- | --- |
+| FPGA | Xilinx Artix-7 `xc7a100tfgg676-2` |
+| 工具版本 | Vivado 2020.2，含 XSim 和 7-series 器件支持 |
+| 工程 | [vivado/CMOS_OV6946_HDMI.xpr](vivado/CMOS_OV6946_HDMI.xpr) |
+| 活动顶层 | [rtl/FPGA_Test.v](rtl/FPGA_Test.v) |
+| 引脚与时序约束 | [rtl/FPGA_Test.xdc](rtl/FPGA_Test.xdc) |
+| 系统参考时钟 | 25 MHz、27 MHz |
+| 显示配置 | 1280×720；74.25 MHz 像素时钟、371.25 MHz 串行时钟 |
+| 仓库检查 | Python 3.10+，仅使用标准库 |
 
-- Vivado 工程文件：`vivado/CMOS_OV6946_HDMI.xpr`
-- 顶层模块：`FPGA_Test`
-- 目标器件：`xc7a100tfgg676-2`
-- 主要约束文件：`rtl/FPGA_Test.xdc`
+约束对应原工程硬件连接。移植前核对原理图、电平、DDR3 型号和 PHY 延迟配置。传感器寄存器表保留模块名 `I2C_OV426_400400_Config`，需与实际相机模组匹配。
 
-## 目录说明
+## 快速开始
 
-- `src/`：手写 RTL，包含采集、ISP、DDR AXI 控制、显示与基础以太网模块。
-- `rtl/`：顶层封装、约束，以及另一套较完整的 UDP/RGMII 协议栈实现。
-- `ipc/`：DDR3、PLL、FIFO 等 IP 配置与导出结果。
-- `vivado/CMOS_OV6946_HDMI.srcs/`：Vivado 工程源目录与项目内导入副本，保留用于直接打开工程。
+克隆并进入仓库：
 
-## 以太网链路现状
+```sh
+git clone https://github.com/Sanssssssssssssssss/ov6946-fpga-image-preprocess-accel-pipeline.git
+cd ov6946-fpga-image-preprocess-accel-pipeline
+```
 
-仓库中同时存在两类以太网相关实现：
+在已配置 Vivado 命令行环境的终端运行：
 
-- `src/eth/`：与当前图像链路更接近的 UDP/GMII 发送接收模块。
-- `rtl/UDP/`：独立的 ARP/UDP/RGMII 协议栈。
+```sh
+python scripts/check_project.py
+vivado -mode batch -nojournal -log build-sim.log -source scripts/sim.tcl
+vivado -mode batch -nojournal -log build-check.log -source scripts/build.tcl -tclargs check
+```
 
-当前快照里，以太网图像导出部分仍处于未完全收口的状态。`rtl/FPGA_Test.v` 中保留了 `pixel_filter_to_fifo` 等下游导出接口调用，但对应模块未在当前仓库中找到定义；同时顶层中 `lcd_*` / `w_lcd_*` 一组中间信号也没有在同文件内完整闭合。因此本仓库更适合作为图像预处理链路整理版与二次开发基线，而不是直接宣称为“开箱即用”的最终发布版本。
+第一条检查工程路径、头文件和活动模块重名；第二条运行除法器与同步延迟自检；第三条生成 IP 输出并展开实际顶层。**RTL 展开允许厂商 IP 作为黑盒，不代表综合或板级验证通过。** GitHub Actions 仅运行第一项。
 
-## 打开与构建
+生成综合结果或 bitstream：
 
-1. 使用 Vivado 打开 `vivado/CMOS_OV6946_HDMI.xpr`。
-2. 以 `FPGA_Test` 作为顶层模块。
-3. 如需重新生成已清理掉的运行缓存，直接执行综合/实现即可，Vivado 会自动重建 `.runs`、`.cache`、`.hw`、`.Xil` 等目录。
+```sh
+vivado -mode batch -nojournal -log build-synth.log -source scripts/build.tcl -tclargs synth
+vivado -mode batch -nojournal -log build-bitstream.log -source scripts/build.tcl -tclargs bitstream
+```
 
-## 清理说明
+构建脚本在 `build/project/` 创建工程副本；报告放在 `build/`，bitstream 位于 `build/project/image_preprocess.runs/impl_1/`。失败返回非零退出码。实际验证范围见 [验证记录](docs/validation.md)。也可用 GUI 打开 XPR，活动源码直接指向根目录 `src/`、`rtl/`。
 
-本次整理仅做仓库层面的清洁化处理：
+## 目录
 
-- 去除手写源码和导入副本中的作者头注释、旧机器路径和导入时间信息。
-- 删除 `.bak`、Vivado 运行缓存、日志、临时文件。
-- 不主动改动 RTL 行为与接口语义。
+```text
+rtl/                     顶层与活动 XDC
+src/
+  cmos_i2c/              相机配置、I2C、DVP 采集
+  isp/                   Bayer 解码、行缓存、窗口遮罩
+  Video_Image_Processor/ 插值、双边滤波、锐化、除法器
+  axi/                   DDR 帧缓存控制与位宽转换
+  lcd_24bit_ip/           显示时序、分辨率宏
+  rgb2dvi/               TMDS 编码与串行输出
+  eth/                   活动 UDP 数据通路
+  io/                    IO 原语封装、同步延迟
+vivado/                  XPR 与工程引用的 IP 配置/输出
+ipc/                     原始 IP 导出材料
+legacy/                  旧顶层、备用协议栈、实验代码
+scripts/                 依赖检查、构建、仿真入口
+tests/                   自检 testbench
+docs/                    上板说明、验证记录
+```
 
-## 关键阅读文件
+旧版本已归档到 `legacy/`，同名模块不能与活动源码一起递归导入。以 XPR 文件集为准；`src/` 也保留少量未启用的辅助模块。Vivado 导入副本已迁出，后续直接编辑 `src/` 和 `rtl/`。
 
-- `rtl/FPGA_Test.v`
-- `src/cmos_i2c/CMOS_Capture_RAW_Gray.v`
-- `src/axi/axi4_ctrl.v`
-- `src/isp/VIP_RAW8_RGB888.v`
-- `src/isp/FrameBoundCrop.v`
-- `src/Video_Image_Processor/bilateral_filter_proc.v`
-- `src/Video_Image_Processor/VIP_Sharpen/laplacian_sharpen_proc.v`
-- `src/rgb2dvi/rgb2dvi.v`
-- `src/eth/UDP_TOP.v`
-- `rtl/UDP/eth_udp_top.v`
+## 参数与接口
+
+| 调整项 | 位置 | 当前配置 |
+| --- | --- | --- |
+| 相机 / 插值尺寸 | `rtl/FPGA_Test.v` | 400×400 → 640×640；Q0.16 缩放比 40960 |
+| 显示时序 | `src/lcd_24bit_ip/lcd_para.v` | `VGA_1280_720_60FPS_74_25MHz` |
+| 滤波与锐化 | `src/Video_Image_Processor/` | 每个 RGB 通道独立处理 |
+| 同步延迟 | 顶层 `u_lag_module` | VS/HS/DE 为 6/47/47 个像素时钟 |
+| 网络端点 | `src/eth/UDP_SEND_READ.v` | `192.168.1.2:8080` → `192.168.1.102:8080` |
+| 图像打包 | `src/eth/Pixeldata2eth.v` | RGB565、行号、`0xAAAA` / `0xBBBB` 标记 |
+
+网络发送使用静态目标 MAC，部署前改为接收端网卡地址。当前没有配套上位机图像重组程序；包长和窗口边界的已知不一致见 [上板说明](docs/bring-up.md)。
+
+## 开发与许可
+
+修改后运行依赖检查和模块仿真。涉及尺寸、FIFO、时钟域或流水线级数时，还需验证数据与 VS/HS/DE 对齐，并检查综合、实现和时序报告。
+
+仓库包含继承 RTL 与厂商 IP，不能将整个工程视为 MIT 授权。维护文件的授权范围和已有组件来源见 [LICENSE](LICENSE) 与 [NOTICE](NOTICE)。

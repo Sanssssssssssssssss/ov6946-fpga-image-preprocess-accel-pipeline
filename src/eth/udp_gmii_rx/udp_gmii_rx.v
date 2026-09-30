@@ -1,7 +1,7 @@
 module udp_gmii_rx(
-	input              reset_n,
+    input              reset_n,
 
-	input              gmii_rx_en,
+    input              gmii_rx_en,
 
   input     [47:0]   local_mac,
   input     [31:0]   local_ip,
@@ -11,19 +11,17 @@ module udp_gmii_rx(
   output reg         fifo_wr,
   output reg[7:0]    fifo_din,
 
-  output             clk125M_o,
-
-	output reg[47:0]   exter_mac,
+    output reg[47:0]   exter_mac,
   output reg[31:0]   exter_ip,
-	output reg[15:0]   exter_port,
+    output reg[15:0]   exter_port,
 
-	output reg[15:0]   rx_data_length,
+    output reg[15:0]   rx_data_length,
   output reg         one_pkt_done,
   output reg         pkt_error,
   output    [31:0]   debug_cal_crc,
 
-	input              gmii_rx_clk,
-	input              gmii_rxdv,
+    input              gmii_rx_clk,
+    input              gmii_rxdv,
   input     [7 :0]   gmii_rxd
 );
 
@@ -108,11 +106,10 @@ reg  [1:0]  cnt_crc;
 
 wire clk125M = gmii_rx_clk;
 
-assign clk125M_o = clk125M;
 assign debug_cal_crc = cal_crc_result;
 
-	//将本地MAC、IP、PORT寄存
-	always@(posedge clk125M or negedge reset_n)
+    //将本地MAC、IP、PORT寄存
+    always@(posedge clk125M or negedge reset_n)
   if(!reset_n)
   begin
     local_mac_reg  <= 48'h00_00_00_00_00_00;
@@ -126,8 +123,8 @@ assign debug_cal_crc = cal_crc_result;
     local_port_reg <= local_port;
   end
 
-	//将以太网输入的接收信号寄存
-	always@(posedge clk125M or negedge reset_n)
+    //将以太网输入的接收信号寄存
+    always@(posedge clk125M or negedge reset_n)
   if(!reset_n)
   begin
     reg_gmii_rxd  <= 8'h00;
@@ -140,7 +137,7 @@ assign debug_cal_crc = cal_crc_result;
   end
 
   //将以太网输入的接收信号寄存后打拍
-	always@(posedge clk125M)
+    always@(posedge clk125M)
   begin
     rx_data_dly1  <= reg_gmii_rxd;
     rx_data_dly2  <= rx_data_dly1;
@@ -149,7 +146,7 @@ assign debug_cal_crc = cal_crc_result;
   end
 
   //cnt_preamble
-	always@(posedge clk125M or negedge reset_n)
+    always@(posedge clk125M or negedge reset_n)
   if(!reset_n)
     cnt_preamble <= 4'd0;
   else if(curr_state == RX_PREAMBLE && rx_data_dly2 == 8'h55)
@@ -158,7 +155,7 @@ assign debug_cal_crc = cal_crc_result;
     cnt_preamble <= 4'd0;
 
   //cnt_eth_header
-	always@(posedge clk125M or negedge reset_n)
+    always@(posedge clk125M or negedge reset_n)
   if(!reset_n)
     cnt_eth_header <= 4'd0;
   else if(curr_state == RX_ETH_HEADER)
@@ -167,7 +164,7 @@ assign debug_cal_crc = cal_crc_result;
     cnt_eth_header <= 4'd0;
 
   //eth_header
-	always@(posedge clk125M or negedge reset_n)
+    always@(posedge clk125M or negedge reset_n)
   if(!reset_n)
   begin
     rx_dst_mac  <= 48'h00_00_00_00_00_00;
@@ -203,7 +200,7 @@ assign debug_cal_crc = cal_crc_result;
     rx_eth_type <= rx_eth_type;
   end
 
-	always@(posedge clk125M or negedge reset_n)
+    always@(posedge clk125M or negedge reset_n)
   if(!reset_n)
     eth_header_check_ok <= 1'b0;
   else if(rx_eth_type == ETH_type && (rx_dst_mac == local_mac_reg || rx_dst_mac == 48'hFF_FF_FF_FF_FF_FF))
@@ -212,7 +209,7 @@ assign debug_cal_crc = cal_crc_result;
     eth_header_check_ok <= 1'b0;
 
   //cnt_ip_header
-	always@(posedge clk125M or negedge reset_n)
+    always@(posedge clk125M or negedge reset_n)
   if(!reset_n)
     cnt_ip_header <= 5'd0;
   else if(curr_state == RX_IP_HEADER)
@@ -221,7 +218,7 @@ assign debug_cal_crc = cal_crc_result;
     cnt_ip_header <= 5'd0;
 
   //ip_header
-	always@(posedge clk125M or negedge reset_n)
+    always@(posedge clk125M or negedge reset_n)
   if(!reset_n)
   begin
     {rx_ip_ver,rx_ip_hdr_len}     <= 8'h0;
@@ -305,7 +302,7 @@ assign debug_cal_crc = cal_crc_result;
     .checksum       (cal_check_sum      )
   );
 
-	always@(posedge clk125M or negedge reset_n)
+    always@(posedge clk125M or negedge reset_n)
   if(!reset_n)
     ip_header_check_ok <= 1'b0;
   else if({IP_ver,IP_hdr_len,cal_check_sum,local_ip_reg} ==  // 这里做一次检测效验码/目标ip是否都是Board的IP与MAC
@@ -316,7 +313,7 @@ assign debug_cal_crc = cal_crc_result;
 
 
   //cnt_udp_header
-	always@(posedge clk125M or negedge reset_n)
+    always@(posedge clk125M or negedge reset_n)
   if(!reset_n)
     cnt_udp_header <= 4'd0;
   else if(curr_state == RX_UDP_HEADER)
@@ -324,7 +321,7 @@ assign debug_cal_crc = cal_crc_result;
   else
     cnt_udp_header <= 4'd0;
 
-	always@(posedge clk125M or negedge reset_n)
+    always@(posedge clk125M or negedge reset_n)
   if(!reset_n)
   begin
     rx_src_port  <= 16'h0;
@@ -344,7 +341,7 @@ assign debug_cal_crc = cal_crc_result;
     endcase
   end
 
-	always@(posedge clk125M or negedge reset_n)
+    always@(posedge clk125M or negedge reset_n)
   if(!reset_n)
     udp_header_check_ok <= 1'b0;
   else if(rx_dst_port == local_port_reg)
@@ -353,7 +350,7 @@ assign debug_cal_crc = cal_crc_result;
     udp_header_check_ok <= 1'b0;
 
   //cnt_data
-	always@(posedge clk125M or negedge reset_n)
+    always@(posedge clk125M or negedge reset_n)
   if(!reset_n)
     cnt_data <= 16'd0;
   else if(curr_state == RX_DATA)
@@ -362,7 +359,7 @@ assign debug_cal_crc = cal_crc_result;
     cnt_data <= 16'd0;
 
   //cnt_drp_data
-	always@(posedge clk125M or negedge reset_n)
+    always@(posedge clk125M or negedge reset_n)
   if(!reset_n)
     cnt_drp_data <= 5'd0;
   else if(curr_state == RX_DRP_DATA)
@@ -371,7 +368,7 @@ assign debug_cal_crc = cal_crc_result;
     cnt_drp_data <= 5'd0;
 
   //cnt_crc
-	always@(posedge clk125M or negedge reset_n)
+    always@(posedge clk125M or negedge reset_n)
   if(!reset_n)
     cnt_crc <= 2'd0;
   else if(curr_state == RX_CRC)
@@ -380,7 +377,7 @@ assign debug_cal_crc = cal_crc_result;
     cnt_crc <= 2'd0;
 
   //rx_crc_data
-	always@(posedge clk125M or negedge reset_n)
+    always@(posedge clk125M or negedge reset_n)
   if(!reset_n)
     rx_crc_data <= 32'd0;
   else if(curr_state == RX_CRC)
@@ -394,7 +391,7 @@ assign debug_cal_crc = cal_crc_result;
   end
 
   //FSM 状态机
-	always@(posedge clk125M or negedge reset_n)
+    always@(posedge clk125M or negedge reset_n)
   if(!reset_n)
     curr_state <= IDLE;
   else
@@ -537,13 +534,13 @@ assign debug_cal_crc = cal_crc_result;
   always@(posedge clk125M or negedge reset_n)
   if(!reset_n)
   begin
-  	exter_mac  <= 48'h0;
+      exter_mac  <= 48'h0;
     exter_ip   <= 32'h0;
     exter_port <= 16'h0;
   end
   else if(curr_state == PKT_CHECK)
   begin
-  	exter_mac  <= rx_src_mac;
+      exter_mac  <= rx_src_mac;
     exter_ip   <= rx_src_ip;
     exter_port <= rx_src_port;
   end

@@ -1,4 +1,8 @@
 # OS
+build/
+.Xil/
+__pycache__/
+xsim.dir/
 desktop.ini
 Thumbs.db
 

@@ -42,7 +42,7 @@ begin
 26:	LUT_DATA = { 16'h4708, 8'h03 };
 27:	LUT_DATA = { 16'h3205, 8'h00 };
 28:	LUT_DATA = { 16'h0100, 8'h01 };
-		default:LUT_DATA    =   {16'h0000, 8'h00};
+        default:LUT_DATA    =   {16'h0000, 8'h00};
     endcase
 end
 

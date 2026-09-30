@@ -1,7 +1,7 @@
 module Laplacian_sharpen_top
 #(
-    parameter   [10:0]  IMG_HDISP = 11'd640,                            //  640*480
-    parameter   [10:0]  IMG_VDISP = 11'd480
+    parameter   [10:0]  IMG_HDISP = 11'd1280,
+    parameter   [10:0]  IMG_VDISP = 11'd720
 )
 (
     //  global clock
@@ -14,8 +14,8 @@ module Laplacian_sharpen_top
     input  wire     [7:0]       per_img_gray    ,                       //  Prepared Image brightness data
 
     //  Image data has been processd
-    output wire                 post_img_vsync  ,                       //  Processed Image data vsync valid signal
-    output wire                 post_img_href   ,                       //  Processed Image data href vaild  signal
+    // output wire                 post_img_vsync  ,                       //  Processed Image data vsync valid signal
+    // output wire                 post_img_href   ,                       //  Processed Image data href vaild  signal
     output wire     [7:0]       post_img_gray                           //  Processed Image brightness data
 );
 //----------------------------------------------------------------------
@@ -35,8 +35,8 @@ u_laplacian_sharpen_proc
     .per_img_gray   (per_img_gray   ),                                  //  Prepared Image brightness input
 
     //  Image data has been processed
-    .post_img_vsync (post_img_vsync ),                                  //  processed Image data vsync valid signal
-    .post_img_href  (post_img_href  ),                                  //  processed Image data href vaild  signal
+    // .post_img_vsync (post_img_vsync ),                                  //  processed Image data vsync valid signal
+    // .post_img_href  (post_img_href  ),                                  //  processed Image data href vaild  signal
     .post_img_gray  (post_img_gray  )                                   //  processed Image brightness output
 );
 

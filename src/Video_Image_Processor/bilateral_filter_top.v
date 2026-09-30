@@ -1,7 +1,7 @@
 module bilateral_filter_top
 #(
-    parameter   [10:0]  IMG_HDISP = 11'd640,                            //  640*480
-    parameter   [10:0]  IMG_VDISP = 11'd480
+    parameter   [10:0]  IMG_HDISP = 11'd1280,
+    parameter   [10:0]  IMG_VDISP = 11'd720
 )
 (
     //  global clock

@@ -1,39 +1,39 @@
 `timescale 1ns / 1ps
 
 module ODDR10To1 #(
-	parameter 	ENABLE_TDATA_IN 	= 0
+    parameter 	ENABLE_TDATA_IN 	= 0
 )(
-	input 			clkx_i,
-	input 			clk_i,
-	input 			rst_i,
-	input 			oe_i, 	//	Output Enable.
+    input 			clkx_i,
+    input 			clk_i,
+    input 			rst_i,
+    input 			oe_i, 	//	Output Enable.
 
-	//	Input
-	input 	[9:0] 	data_i,	//	Lsb Output First.
+    //	Input
+    input 	[9:0] 	data_i,	//	Lsb Output First.
 
-	//	Output
-	output 			data_p_o,
-	output 			data_n_o
+    //	Output
+    output 			data_p_o,
+    output 			data_n_o
 
 );
 
-	wire 	[1:0] 	w_cascade;
-	wire 			w_data_o, w_data_t;
+    wire 	[1:0] 	w_cascade;
+    wire 			w_data_o, w_data_t;
 
-	//	Use OUTBUFDS for data_p_o & data_n_o.
-	OBUFTDS hdmio_txc (.O(data_p_o), .OB(data_n_o), .I(w_data_o), .T(w_data_t));
+    //	Use OUTBUFDS for data_p_o & data_n_o.
+    OBUFTDS hdmio_txc (.O(data_p_o), .OB(data_n_o), .I(w_data_o), .T(w_data_t));
 
-	//reg 			r_clk_i = 0;
-	//reg 			r_clkx_i = 0;
-	//always @(posedge clk_i) #0.1 r_clk_i <= ~r_clk_i;
-	//always @(posedge clkx_i) begin
-	//	#0.05 r_clkx_i <= r_clk_i;
-	//end
-	//wire 			w_upd_shift = (r_clk_i != r_clkx_i);
-	//reg 			r_upd_shift = 0;
-	//always @(posedge clkx_i) begin
-	//	r_upd_shift <= w_upd_shift;
-	//end
+    //reg 			r_clk_i = 0;
+    //reg 			r_clkx_i = 0;
+    //always @(posedge clk_i) #0.1 r_clk_i <= ~r_clk_i;
+    //always @(posedge clkx_i) begin
+    //	#0.05 r_clkx_i <= r_clk_i;
+    //end
+    //wire 			w_upd_shift = (r_clk_i != r_clkx_i);
+    //reg 			r_upd_shift = 0;
+    //always @(posedge clkx_i) begin
+    //	r_upd_shift <= w_upd_shift;
+    //end
 
     OSERDESE2 #(
       .DATA_RATE_OQ("DDR"),   // DDR, SDR

@@ -1,19 +1,19 @@
 `timescale 1ns / 1ps
 
 module IDDRDly #(
-	parameter 	IDELAY_TAP 	= 10		//	Binary delay tap. Assume IOPAD->IBUF->BUFG delay is 2ns, IOPAD->IBUF delay is 1ns. Add additional 1ns for data. For A7 the tap is 78ps. Set to 10 by default.
+    parameter 	IDELAY_TAP 	= 10		//	Binary delay tap. Assume IOPAD->IBUF->BUFG delay is 2ns, IOPAD->IBUF delay is 1ns. Add additional 1ns for data. For A7 the tap is 78ps. Set to 10 by default.
 )(
-	input 			iclk_i,	//	ICLK. Shall be feed by IOCLK to remove data skew.
-	input 			clk_i,
-	input 			rst_i, 	//	Must raise rst_i to reset ISERDES state. Async.
+    input 			iclk_i,	//	ICLK. Shall be feed by IOCLK to remove data skew.
+    input 			clk_i,
+    input 			rst_i, 	//	Must raise rst_i to reset ISERDES state. Async.
 
-	input 			data_i,	//	IOB Input
-	output 			data_p_o,
-	output 			data_n_o
+    input 			data_i,	//	IOB Input
+    output 			data_p_o,
+    output 			data_n_o
 );
 
-	//	Add delay for data
-	wire			w_data_i_d;
+    //	Add delay for data
+    wire			w_data_i_d;
 
    IDELAYE2 #(
       .CINVCTRL_SEL("FALSE"),          // Enable dynamic clock inversion (FALSE, TRUE)

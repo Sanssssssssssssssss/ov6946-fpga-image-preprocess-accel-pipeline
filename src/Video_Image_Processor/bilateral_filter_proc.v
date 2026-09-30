@@ -1,7 +1,7 @@
 module bilateral_filter_proc
 #(
-    parameter   [10:0]  IMG_HDISP = 11'd640,            //  640*480
-    parameter   [10:0]  IMG_VDISP = 11'd480
+    parameter   [10:0]  IMG_HDISP = 11'd1280,
+    parameter   [10:0]  IMG_VDISP = 11'd720
 )
 (
     input  wire                 clk             ,
@@ -525,7 +525,7 @@ u8_unsigned_divider
     .dout_valid (                   )
 );
 
-//----------------------------------------------------------------------
+// ----------------------------------------------------------------------
 //  lag 34 clocks signal sync
 localparam C_CLK_LATENCY = 34;
 

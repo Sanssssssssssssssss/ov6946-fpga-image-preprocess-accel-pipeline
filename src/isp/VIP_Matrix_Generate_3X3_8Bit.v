@@ -95,13 +95,13 @@ begin
         begin
         per_frame_vsync_r <= 0;
         per_frame_href_r <= 0;
-	  per_frame_hsync_r <= 0;
+      per_frame_hsync_r <= 0;
         end
     else
         begin
         per_frame_vsync_r   <=  {per_frame_vsync_r[1:0],    per_frame_vsync};
         per_frame_href_r    <=  {per_frame_href_r[1:0],     per_frame_href};
-	  per_frame_hsync_r   <=  {per_frame_hsync_r[1:0],    per_frame_hsync};
+      per_frame_hsync_r   <=  {per_frame_hsync_r[1:0],    per_frame_hsync};
         end
 end
 //Give up the 1th and 2th row edge data caculate for simple process

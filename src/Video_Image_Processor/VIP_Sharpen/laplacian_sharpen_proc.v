@@ -1,7 +1,7 @@
 module laplacian_sharpen_proc
 #(
-    parameter   [10:0]  IMG_HDISP = 11'd640,                //  640*480
-    parameter   [10:0]  IMG_VDISP = 11'd480
+    parameter   [10:0]  IMG_HDISP = 11'd1280,                //  640*480
+    parameter   [10:0]  IMG_VDISP = 11'd720
 )
 (
     input  wire                 clk             ,
@@ -13,8 +13,8 @@ module laplacian_sharpen_proc
     input  wire     [7:0]       per_img_gray    ,       //  Prepared Image brightness input
 
     //  Image data has been processed
-    output reg                  post_img_vsync  ,       //  processed Image data vsync valid signal
-    output reg                  post_img_href   ,       //  processed Image data href vaild  signal
+    // output reg                  post_img_vsync  ,       //  processed Image data vsync valid signal
+    // output reg                  post_img_href   ,       //  processed Image data href vaild  signal
     output reg      [7:0]       post_img_gray           //  processed Image brightness output
 );
 //----------------------------------------------------------------------
@@ -76,6 +76,7 @@ reg             [ 9:0]          minus_data;
 always @(posedge clk)
 begin
     minute_data <= {matrix_p22,2'b0} + matrix_p22;
+    // minute_data <= {matrix_p22,2'b0} + matrix_p22;
     minus_data  <= matrix_p12 + matrix_p21 + matrix_p23 + matrix_p32;
 end
 
@@ -101,22 +102,22 @@ end
 
 //----------------------------------------------------------------------
 //  lag 3 clocks signal sync
-reg             [2:0]           matrix_img_vsync_r1;
-reg             [2:0]           matrix_img_href_r1;
+// reg             [2:0]           matrix_img_vsync_r1;
+// reg             [2:0]           matrix_img_href_r1;
 reg             [2:0]           matrix_edge_flag_r1;
 
 always @(posedge clk or negedge rst_n)
 begin
     if(!rst_n)
     begin
-        matrix_img_vsync_r1 <= 3'b0;
-        matrix_img_href_r1  <= 3'b0;
+        // matrix_img_vsync_r1 <= 3'b0;
+        // matrix_img_href_r1  <= 3'b0;
         matrix_edge_flag_r1 <= 3'b0;
     end
     else
     begin
-        matrix_img_vsync_r1 <= {matrix_img_vsync_r1[1:0],matrix_img_vsync};
-        matrix_img_href_r1  <= {matrix_img_href_r1[1:0],matrix_img_href};
+        // matrix_img_vsync_r1 <= {matrix_img_vsync_r1[1:0],matrix_img_vsync};
+        // matrix_img_href_r1  <= {matrix_img_href_r1[1:0],matrix_img_href};
         matrix_edge_flag_r1 <= {matrix_edge_flag_r1[1:0],matrix_top_edge_flag | matrix_bottom_edge_flag | matrix_left_edge_flag | matrix_right_edge_flag};
     end
 end
@@ -140,18 +141,18 @@ begin
         post_img_gray <= pixel_data2;
 end
 
-always @(posedge clk or negedge rst_n)
-begin
-    if(!rst_n)
-    begin
-        post_img_vsync <= 1'b0;
-        post_img_href  <= 1'b0;
-    end
-    else
-    begin
-        post_img_vsync <= matrix_img_vsync_r1[2];
-        post_img_href  <= matrix_img_href_r1[2];
-    end
-end
+// always @(posedge clk or negedge rst_n)
+// begin
+//     if(!rst_n)
+//     begin
+//         post_img_vsync <= 1'b0;
+//         post_img_href  <= 1'b0;
+//     end
+//     else
+//     begin
+//         post_img_vsync <= matrix_img_vsync_r1[2];
+//         post_img_href  <= matrix_img_href_r1[2];
+//     end
+// end
 
 endmodule
